@@ -1,3 +1,4 @@
+from map_objects.rectangle import Rect
 from map_objects.tile import Tile
 
 
@@ -12,5 +13,18 @@ class GameMap:
 
         return tiles
 
+    def make_map(self):
+        room1 = Rect(20, 15, 10, 15)
+        room2 = Rect(35, 15, 10, 15)
+
+        self.create_room(room1)
+        self.create_room(room2)
+
+    def create_room(self, room):
+       for x in range(room.x1 + 1, room.x2):
+           for y in range(room.y1 + 1, room.y2):
+               self.tiles[x][y].blocked = False
+               self.tiles[x][y].block_sight = False
+
     def is_blocked(self, x, y):
-        return self.tiles[x][y].blocked
+       return self.tiles[x][y].blocked
