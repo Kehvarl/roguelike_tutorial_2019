@@ -1,7 +1,7 @@
 import tcod as libtcod
 
-def render_all(con, entities, game_map, screen_width, screen_height, colors):
-    draw_map(con, game_map, colors)
+def render_all(con, entities, game_map, fov_map, fov_recompute, screen_width, screen_height, colors):
+    draw_map(con, game_map, fov_map, fov_recompute, colors)
 
     for entity in entities:
         draw_entity(con, entity)
@@ -14,15 +14,27 @@ def clear_all(con, entities):
         clear_entity(con, entity)
 
 
-def draw_map(con, game_map, colors):
-    for y in range(game_map.height):
-        for x in range(game_map.width):
-            wall = game_map.tiles[x][y].block_sight
+def draw_map(con, game_map, fov_map, fov_recompute, colors):
+    if fov_recompute:
+        for y in range(game_map.height):
+            for x in range(game_map.width):
+                visible = libtcod.map_is_in_fov(fov_map, x, y)
+                wall = game_map.tiles[x][y].block_sight
 
-            if wall:
-                libtcod.console_set_char_background(con, x, y, colors.get('dark_wall'), libtcod.BKGND_SET)
-            else:
-                libtcod.console_set_char_background(con, x, y, colors.get('dark_ground'), libtcod.BKGND_SET)
+                if visible:
+                    if wall:
+                        color = colors.get('light_wall')
+                    else:
+                        color = colors.get('light_ground')
+                else:
+                    if wall:
+                        color = colors.get('dark_wall')
+                    else:
+                        color = colors.get('dark_ground')
+                draw_tile(con, x, y, color)
+
+def draw_tile(con, x, y, color):
+    libtcod.console_set_char_background(con, x, y, color, libtcod.BKGND_SET)
 
 
 def draw_entity(con, entity):
