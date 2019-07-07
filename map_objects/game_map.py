@@ -1,3 +1,4 @@
+from random import randint
 from map_objects.rectangle import Rect
 from map_objects.tile import Tile
 
@@ -13,13 +14,39 @@ class GameMap:
 
         return tiles
 
-    def make_map(self):
-        room1 = Rect(20, 15, 10, 15)
-        room2 = Rect(35, 15, 10, 15)
+    def make_map(self, max_rooms, room_min_size, room_max_size, player):
+        rooms = []
+        num_rooms = 0
+        
+        for r in range(max_rooms):
+            w = randint(room_min_size, room_max_size)
+            h = randint(room_min_size, room_max_size)
+            x = randint(0, self.width - w - 1)
+            y = randint(0, self.height - h - 1)
 
-        self.create_room(room1)
-        self.create_room(room2)
-        self.create_h_tunnel(25, 40, 23)
+            new_room = Rect(x, y, w, h)
+
+            for other_room in rooms:
+                if new_room.intersect(other_room):
+                    break
+            else:
+                self.create_room(new_room)
+                (new_x, new_y) = new_room.center()
+
+                if num_rooms ==0:
+                    player.x = new_x
+                    player.y = new_y
+                else:
+                    (prev_x, prev_y) = rooms[num_rooms -1].center()
+                    if(randint(0, 1) == 1):
+                        self.create_h_tunnel(prev_x, new_x, prev_y)
+                        self.create_v_tunnel(prev_y, new_y, new_x)
+                    else:
+                        self.create_v_tunnel(prev_y, new_y, prev_x)
+                        self.create_h_tunnel(prev_x, new_x, new_y)
+
+                rooms.append(new_room)
+                num_rooms += 1
 
     def create_room(self, room):
        for x in range(room.x1 + 1, room.x2):
