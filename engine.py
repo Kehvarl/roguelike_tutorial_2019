@@ -1,5 +1,5 @@
 import tcod as libtcod
-from entity import Entity
+from entity import Entity, get_blocking_entities_at_location
 from input_handlers import handle_keys
 from map_objects.game_map import GameMap
 from fov_functions import initialize_fov, recompute_fov
@@ -19,6 +19,8 @@ def main():
     fov_light_walls = True
     fov_radius = 10
 
+    max_monsters_per_room = 3
+
     colors = {
         'dark_wall': libtcod.Color(0,0,100),
         'dark_ground': libtcod.Color(50,50,150),
@@ -26,9 +28,8 @@ def main():
         'light_ground': libtcod.Color(200, 180, 50)
     }
 
-    player = Entity(40, 25, '@', libtcod.white)
-    npc = Entity(25,20, 'N', libtcod.yellow)
-    entities = [npc, player]
+    player = Entity(40, 25, '@', libtcod.white, 'Player', blocks=True)
+    entities = [player]
 
     libtcod.console_set_custom_font('arial10x10.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD)
 
@@ -36,7 +37,7 @@ def main():
     con = libtcod.console_new(screen_width, screen_height)
 
     game_map = GameMap(map_width, map_height)
-    game_map.make_map(max_rooms, room_min_size, room_max_size, player)
+    game_map.make_map(max_rooms, room_min_size, room_max_size, player, entities, max_monsters_per_room)
 
     fov_recompute = True
     fov_map = initialize_fov(game_map)
@@ -64,9 +65,17 @@ def main():
 
         if move:
             dx, dy = move
-            if not game_map.is_blocked(player.x + dx, player.y + dy):
-                player.move(dx, dy)
-                fov_recompute = True
+            dest_x = player.x + dx
+            dest_y = player.y + dy
+
+            if not game_map.is_blocked(dest_x, dest_y):
+                target = get_blocking_entities_at_location(entities, dest_x, dest_y)
+
+                if target:
+                    print('You kick the {} in the shins, much to it\'s annoyance'.format(target.name))
+                else:
+                    player.move(dx, dy)
+                    fov_recompute = True
         if exit:
             return True
 
