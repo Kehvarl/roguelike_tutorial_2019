@@ -21,12 +21,14 @@ def draw_map(con, game_map, fov_map, fov_recompute, colors):
                 visible = libtcod.map_is_in_fov(fov_map, x, y)
                 wall = game_map.tiles[x][y].block_sight
 
+                color = libtcod.Color(0,0,0)
                 if visible:
                     if wall:
                         color = colors.get('light_wall')
                     else:
                         color = colors.get('light_ground')
-                else:
+                    game_map.tiles[x][y].explored = True
+                elif game_map.tiles[x][y].explored: 
                     if wall:
                         color = colors.get('dark_wall')
                     else:
