@@ -92,3 +92,14 @@ class GameMap:
 
     def is_blocked(self, x, y):
         return self.tiles[x][y].blocked
+
+
+    def new_fov_map(self):
+        fov = libtcod.map_new(self.width, self.height)
+
+        for y1 in range(self.height):
+            for x1 in range(self.width):
+                libtcod.map_set_properties(fov, x1, y1, not self.tiles[x1][y1].block_sight, not self.tiles[x1][y1].blocked)
+    
+        return fov
+   
