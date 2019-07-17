@@ -1,4 +1,5 @@
 import tcod as libtcod
+from components.combat import Combat
 from entity import Entity, get_blocking_entities_at_location
 from input_handlers import handle_keys
 from game_states import GameStates
@@ -29,7 +30,8 @@ def main():
         'light_ground': libtcod.Color(200, 180, 50)
     }
 
-    player = Entity(40, 25, '@', libtcod.white, 'Player', blocks=True)
+    combat_component = Combat(hp=30, defense=2, power=5)
+    player = Entity(40, 25, '@', libtcod.white, 'Player', blocks=True, combat=combat_component)
     entities = [player]
 
     libtcod.console_set_custom_font('arial10x10.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD)
@@ -89,8 +91,9 @@ def main():
 
         if game_state == GameStates.ENEMY_TURN:
             for entity in entities:
-                if entity != player:
-                    print('The {} ponders the meaning of its existence.'.format(entity.name))
+                if entity.ai:
+                    entity.ai.take_turn()
+
             game_state = GameStates.PLAYER_TURN
 
 

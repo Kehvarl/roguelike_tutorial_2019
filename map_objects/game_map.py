@@ -1,6 +1,8 @@
 import tcod as libtcod
 from random import randint
 from entity import Entity
+from components.combat import Combat
+from components.ai import BasicMonster
 from map_objects.rectangle import Rect
 from map_objects.tile import Tile
 
@@ -77,9 +79,14 @@ class GameMap:
 
             if not any([entity for entity in entities if entity.x == x and entity.y == y]):
                 if randint(0, 100) < 80:
-                    monster = Entity(x, y, 'o', libtcod.desaturated_green, 'Orc', blocks=True)
+                    combat_component = Combat(hp=10, defense=0, power=3)
+                    ai_component = BasicMonster()
+
+                    monster = Entity(x, y, 'o', libtcod.desaturated_green, 'Orc', blocks=True, combat=combat_component, ai=ai_component)
                 else:
-                    monster = Entity(x, y, 'T', libtcod.darker_green, 'Troll', blocks=True)
+                    combat_component = Combat(hp=16, defense=1, power=4)
+                    ai_component = BasicMonster()
+                    monster = Entity(x, y, 'T', libtcod.darker_green, 'Troll', blocks=True, combat=combat_component, ai=ai_component)
 
                 entities.append(monster)
 
