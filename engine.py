@@ -77,7 +77,7 @@ def main():
                 target = get_blocking_entities_at_location(entities, dest_x, dest_y)
 
                 if target:
-                    print('You kick the {} in the shins, much to it\'s annoyance'.format(target.name))
+                    player.combat.attack(target)
                 else:
                     player.move(dx, dy)
                     fov_recompute = True
