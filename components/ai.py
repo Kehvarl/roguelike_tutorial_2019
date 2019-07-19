@@ -16,3 +16,8 @@ class BasicMonster:
 
         return results
 
+
+class DeadMonster:
+    def take_turn(self, target, fov_map, game_map, entities):
+        return []
+
