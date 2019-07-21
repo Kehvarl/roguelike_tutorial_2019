@@ -5,7 +5,7 @@ from components.combat import Combat
 from components.ai import BasicMonster
 from map_objects.rectangle import Rect
 from map_objects.tile import Tile
-
+from render_functions import RenderOrder
 
 class GameMap:
     def __init__(self, width, height):
@@ -82,11 +82,11 @@ class GameMap:
                     combat_component = Combat(hp=10, defense=0, power=3)
                     ai_component = BasicMonster()
 
-                    monster = Entity(x, y, 'o', libtcod.desaturated_green, 'Orc', blocks=True, combat=combat_component, ai=ai_component)
+                    monster = Entity(x, y, 'o', libtcod.desaturated_green, 'Orc', blocks=True, render_order = RenderOrder.ACTOR, combat=combat_component, ai=ai_component)
                 else:
                     combat_component = Combat(hp=16, defense=1, power=4)
                     ai_component = BasicMonster()
-                    monster = Entity(x, y, 'T', libtcod.darker_green, 'Troll', blocks=True, combat=combat_component, ai=ai_component)
+                    monster = Entity(x, y, 'T', libtcod.darker_green, 'Troll', blocks=True, render_order = RenderOrder.ACTOR, combat=combat_component, ai=ai_component)
 
                 entities.append(monster)
 

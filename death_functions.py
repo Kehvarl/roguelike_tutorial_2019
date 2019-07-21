@@ -2,6 +2,7 @@ import tcod as libtcod
 
 from game_states import GameStates
 from components.ai import DeadMonster
+from render_functions import RenderOrder
 
 
 def kill_player(player):
@@ -19,6 +20,7 @@ def kill_monster(monster):
     monster.combat = None
     monster.ai = DeadMonster()
     monster.name = 'remains of ' + monster.name
+    monster.render_order = RenderOrder.CORPSE
 
     return death_message
 
