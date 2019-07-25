@@ -3,6 +3,7 @@ import tcod as libtcod
 
 from render_functions import RenderOrder
 
+
 class Entity:
     """
     A generic object to represent players, enemies, items, etc.
@@ -13,16 +14,28 @@ class Entity:
         self.char = char
         self.color = color
         self.name = name
+        self.label = None
         self.blocks = blocks
         self.render_order = render_order
         self.combat = combat
         self.ai = ai
+        self.fade = False
 
         if self.combat:
             self.combat.owner = self
 
         if self.ai:
             self.ai.owner = self
+
+    def set_ai(self, ai):
+        self.ai = ai
+        self.ai.owner = self
+
+    def title(self):
+        if self.label is None:
+            return self.name
+        else:
+            return '{} of {}'.format(self.label, self.name)
 
     def move(self, dx, dy):
         self.x += dx
@@ -55,7 +68,7 @@ class Entity:
         libtcod.path_compute(my_path, self.x, self.y, target.x, target.y)
 
         if not libtcod.path_is_empty(my_path) and libtcod.path_size(my_path) < 25:
-            x,y = libtcod.path_walk(my_path, True)
+            x, y = libtcod.path_walk(my_path, True)
             if x or y:
                 self.x = x
                 self.y = y
@@ -76,4 +89,3 @@ def get_blocking_entities_at_location(entities, destination_x, destination_y):
         if entity.blocks and entity.x == destination_x and entity.y == destination_y:
             return entity
     return None
-

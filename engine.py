@@ -9,6 +9,7 @@ from map_objects.game_map import GameMap
 from fov_functions import initialize_fov, recompute_fov
 from render_functions import render_all, clear_all, RenderOrder
 
+
 def main():
     screen_width = 80
     screen_height = 50
@@ -28,21 +29,22 @@ def main():
     room_min_size = 6
     max_rooms = 30
 
-    fov_algorithm = 0 # FOV_BASIC: ray-cast from player to all cells on perimeter
+    fov_algorithm = 0  # FOV_BASIC: ray-cast from player to all cells on perimeter
     fov_light_walls = True
     fov_radius = 10
 
     max_monsters_per_room = 3
 
     colors = {
-        'dark_wall': libtcod.Color(0,0,100),
-        'dark_ground': libtcod.Color(50,50,150),
+        'dark_wall': libtcod.Color(0, 0, 100),
+        'dark_ground': libtcod.Color(50, 50, 150),
         'light_wall': libtcod.Color(130, 110, 50),
         'light_ground': libtcod.Color(200, 180, 50)
     }
 
     combat_component = Combat(hp=30, defense=2, power=5)
-    player = Entity(40, 25, '@', libtcod.white, 'Player', blocks=True, render_order= RenderOrder.ACTOR, combat=combat_component)
+    player = Entity(40, 25, '@', libtcod.white, 'Player', blocks=True,
+                    render_order=RenderOrder.ACTOR, combat=combat_component)
     entities = [player]
 
     libtcod.console_set_custom_font('arial10x10.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD)
@@ -71,7 +73,9 @@ def main():
         if fov_recompute:
             recompute_fov(fov_map, player.x, player.y, fov_radius, fov_light_walls, fov_algorithm)
 
-        render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, message_log, screen_width, screen_height, bar_width, panel_height, panel_y, mouse, colors)
+        render_all(con, panel, entities, player, game_map, fov_map, fov_recompute,
+                   message_log, screen_width, screen_height, bar_width,
+                   panel_height, panel_y, mouse, colors)
 
         libtcod.console_flush()
 
@@ -80,7 +84,7 @@ def main():
         action = handle_keys(key)
 
         move = action.get('move')
-        exit = action.get('exit')
+        quit_game = action.get('exit')
         fullscreen = action.get('fullscreen')
 
         player_turn_results = []
@@ -102,7 +106,7 @@ def main():
 
                 game_state = GameStates.ENEMY_TURN
 
-        if exit:
+        if quit_game:
             return True
 
         if fullscreen:
@@ -124,7 +128,9 @@ def main():
 
         if game_state == GameStates.ENEMY_TURN:
             for entity in entities:
-                if entity.ai:
+                if entity.fade:
+                    entities.remove(entity)
+                elif entity.ai:
                     enemy_turn_results = entity.ai.take_turn(player, fov_map, game_map, entities)
 
                     for enemy_turn_result in enemy_turn_results:
