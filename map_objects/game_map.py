@@ -2,6 +2,7 @@ import tcod as libtcod
 from random import randint
 from entity import Entity
 from components.combat import Combat
+from components.item import Item
 from components.ai import BasicMonster
 from map_objects.rectangle import Rect
 from map_objects.tile import Tile
@@ -97,7 +98,8 @@ class GameMap:
             x,y = room.random_point()
 
             if not any([entity for entity in entities if entity.x == x and entity.y == y]):
-                item = Entity(x, y, '!', libtcod.violet, 'Healing Potion', render_order=RenderOrder.ITEM)
+                item_component = Item()
+                item = Entity(x, y, '!', libtcod.violet, 'Healing Potion', render_order=RenderOrder.ITEM, item=item_component)
 
                 entities.append(item)
 

@@ -1,5 +1,6 @@
 import tcod as libtcod
 from components.combat import Combat
+from components.inventory import Inventory
 from death_functions import kill_monster, kill_player
 from entity import Entity, get_blocking_entities_at_location
 from input_handlers import handle_keys
@@ -44,8 +45,11 @@ def main():
     }
 
     combat_component = Combat(hp=30, defense=2, power=5)
+    inventory_component = Inventory(26)
     player = Entity(40, 25, '@', libtcod.white, 'Player', blocks=True,
-                    render_order=RenderOrder.ACTOR, combat=combat_component)
+                    render_order=RenderOrder.ACTOR, combat=combat_component,
+                    inventory = inventory_component)
+
     entities = [player]
 
     libtcod.console_set_custom_font('arial10x10.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD)
@@ -85,6 +89,7 @@ def main():
         action = handle_keys(key)
 
         move = action.get('move')
+        pickup = action.get('pickup')
         quit_game = action.get('exit')
         fullscreen = action.get('fullscreen')
 

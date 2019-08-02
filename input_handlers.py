@@ -13,6 +13,9 @@ def handle_keys(key):
         return {'move': (-1,0)}
     if key.vk == libtcod.KEY_RIGHT or key_char == 'd':
         return {'move': (1,0)}
+
+    if key_char == 'g':
+        return {'pickup': True}
     
     if key_char == 'u':
         return {'move': (-1,-1)}
