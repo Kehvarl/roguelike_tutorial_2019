@@ -18,7 +18,7 @@ class GameMap:
 
         return tiles
 
-    def make_map(self, max_rooms, room_min_size, room_max_size, player, entities, max_monsters_per_room):
+    def make_map(self, max_rooms, room_min_size, room_max_size, player, entities, max_monsters_per_room, max_items_per_room):
         rooms = []
         num_rooms = 0
         
@@ -49,7 +49,8 @@ class GameMap:
                         self.create_v_tunnel(prev_y, new_y, prev_x)
                         self.create_h_tunnel(prev_x, new_x, new_y)
 
-                self.place_entities(new_room, entities, max_monsters_per_room)
+                self.place_monsters(new_room, entities, max_monsters_per_room)
+                self.place_items(new_room, entities, max_items_per_room)
 
                 rooms.append(new_room)
                 num_rooms += 1
@@ -70,12 +71,11 @@ class GameMap:
             self.tiles[x][y].blocked = False
             self.tiles[x][y].block_sight = False
 
-    def place_entities(self, room, entities, max_monsters_per_room):
+    def place_monsters(self, room, entities, max_monsters_per_room):
         number_of_monsters = randint(0, max_monsters_per_room)
 
         for i in range(number_of_monsters):
-            x = randint(room.x1 + 1, room.x2 - 1)
-            y = randint(room.y1 + 1, room.y2 - 1)
+            x,y = room.random_point()
 
             if not any([entity for entity in entities if entity.x == x and entity.y == y]):
                 if randint(0, 100) < 80:
@@ -89,6 +89,17 @@ class GameMap:
                     monster = Entity(x, y, 'T', libtcod.darker_green, 'Troll', blocks=True, render_order = RenderOrder.ACTOR, combat=combat_component, ai=ai_component)
 
                 entities.append(monster)
+
+    def place_items(self, room, entities, max_items_per_room):
+        number_of_items = randint(0, max_items_per_room)
+
+        for i in range(number_of_items):
+            x,y = room.random_point()
+
+            if not any([entity for entity in entities if entity.x == x and entity.y == y]):
+                item = Entity(x, y, '!', libtcod.violet, 'Healing Potion', render_order=RenderOrder.ITEM)
+
+                entities.append(item)
 
     def is_blocked(self, x, y):
         return self.tiles[x][y].blocked
