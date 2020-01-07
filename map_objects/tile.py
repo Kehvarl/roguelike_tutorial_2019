@@ -7,3 +7,5 @@ class Tile:
 
         self.block_sight = block_sight
 
+        self.explored = False
+
